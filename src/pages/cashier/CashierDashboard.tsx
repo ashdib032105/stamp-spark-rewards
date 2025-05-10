@@ -6,7 +6,7 @@ import { CustomerSearch } from '@/components/CustomerSearch';
 import { useAuth } from '@/context/AuthContext';
 import { Award, Clock, List, Badge as BadgeIcon } from 'lucide-react';
 import { CashierSidebar } from '@/components/CashierSidebar';
-import { AssignPointsModal } from '@/components/AssignPointsModal';
+import { EnhancedAssignPointsModal } from '@/components/EnhancedAssignPointsModal';
 
 const CashierDashboard = () => {
   const { user } = useAuth();
