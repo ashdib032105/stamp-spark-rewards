@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
@@ -7,7 +6,6 @@ import {
   Users,
   Award,
   QrCode,
-  MessageSquare,
   Settings,
   ChevronRight,
   ChevronLeft,
@@ -46,11 +44,6 @@ const navItems = [
     title: 'QR Code',
     href: '/business/qr-code',
     icon: QrCode,
-  },
-  {
-    title: 'Campaigns',
-    href: '/business/campaigns',
-    icon: MessageSquare,
   },
   {
     title: 'Settings',

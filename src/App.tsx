@@ -22,6 +22,7 @@ import CustomersPage from "./pages/business/CustomersPage";
 import QrCodePage from "./pages/business/QrCodePage";
 import RewardsPage from "./pages/business/RewardsPage";
 import CashiersPage from "./pages/business/CashiersPage";
+import SettingsPage from "./pages/business/SettingsPage";
 
 // Cashier Pages
 import CashierDashboard from "./pages/cashier/CashierDashboard";
@@ -51,6 +52,7 @@ const App = () => (
             <Route path="/business/rewards" element={<RewardsPage />} />
             <Route path="/business/qr-code" element={<QrCodePage />} />
             <Route path="/business/cashiers" element={<CashiersPage />} />
+            <Route path="/business/settings" element={<SettingsPage />} />
             
             {/* Cashier Routes */}
             <Route path="/cashier/dashboard" element={<CashierDashboard />} />
