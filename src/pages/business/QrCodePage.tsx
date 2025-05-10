@@ -1,10 +1,11 @@
+
 import { useState } from 'react';
 import { Navbar } from '@/components/Navbar';
 import { BusinessSidebar } from '@/components/BusinessSidebar';
 import { QrCodeGenerator } from '@/components/QrCodeGenerator';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { QrCode, Link, ExternalLink, Form } from 'lucide-react';
+import { QrCode, Link, ExternalLink, FileText } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
@@ -203,7 +204,7 @@ const QrCodePage = () => {
                             Form customization coming soon. You'll be able to add custom fields and branding.
                           </p>
                           <Button variant="outline" disabled>
-                            <Form className="h-4 w-4 mr-2" /> Customize Form
+                            <FileText className="h-4 w-4 mr-2" /> Customize Form
                           </Button>
                         </div>
                       </div>
