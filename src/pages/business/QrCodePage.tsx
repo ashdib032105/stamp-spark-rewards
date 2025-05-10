@@ -1,14 +1,14 @@
-
 import { useState } from 'react';
 import { Navbar } from '@/components/Navbar';
 import { BusinessSidebar } from '@/components/BusinessSidebar';
 import { QrCodeGenerator } from '@/components/QrCodeGenerator';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { QrCode, Link, ExternalLink } from 'lucide-react';
+import { QrCode, Link, ExternalLink, Form } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
+import { CustomerSignupFormPreview } from '@/components/CustomerSignupFormPreview';
 
 const QrCodePage = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -45,9 +45,10 @@ const QrCodePage = () => {
             <p className="text-gray-600 mb-6">Create and manage QR codes for your loyalty program</p>
             
             <Tabs defaultValue="qrcode" className="space-y-4">
-              <TabsList className="grid w-full grid-cols-2">
+              <TabsList className="grid w-full grid-cols-3">
                 <TabsTrigger value="qrcode">QR Code</TabsTrigger>
                 <TabsTrigger value="links">Signup Links</TabsTrigger>
+                <TabsTrigger value="form">Form</TabsTrigger>
               </TabsList>
               
               <TabsContent value="qrcode" className="space-y-4">
@@ -160,6 +161,51 @@ const QrCodePage = () => {
                         <Button variant="outline" size="sm" className="gap-1 bg-[#1DA1F2] text-white border-[#1DA1F2] hover:bg-[#1DA1F2]/90 hover:text-white">
                           <ExternalLink className="h-4 w-4" /> Twitter
                         </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              <TabsContent value="form" className="space-y-4">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Customer Signup Form</CardTitle>
+                    <CardDescription>
+                      Preview the form customers will use to sign up for your loyalty program
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex flex-col md:flex-row gap-6">
+                      <div className="flex-1 max-w-md mx-auto">
+                        <CustomerSignupFormPreview 
+                          businessName={businessData.name}
+                          businessId={businessData.id}
+                        />
+                      </div>
+                      
+                      <div className="space-y-4 flex-1">
+                        <div>
+                          <h3 className="font-medium mb-2">Form Information</h3>
+                          <p className="text-sm text-gray-600 mb-4">
+                            This is the form customers will see when they scan your QR code or use your signup links.
+                          </p>
+                          <ul className="list-disc list-inside text-sm text-gray-600 space-y-1">
+                            <li>Phone number is required and used for customer identification</li>
+                            <li>Name is required to personalize the loyalty experience</li>
+                            <li>Birthday is optional but can be used for special promotions</li>
+                          </ul>
+                        </div>
+                        
+                        <div className="pt-4 border-t">
+                          <h3 className="font-medium mb-2">Customization Options</h3>
+                          <p className="text-sm text-gray-500 mb-4">
+                            Form customization coming soon. You'll be able to add custom fields and branding.
+                          </p>
+                          <Button variant="outline" disabled>
+                            <Form className="h-4 w-4 mr-2" /> Customize Form
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   </CardContent>
