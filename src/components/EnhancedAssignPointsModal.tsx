@@ -8,57 +8,55 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from '@/context/AuthContext';
 
-interface AssignPointsModalProps {
+interface EnhancedAssignPointsModalProps {
   open: boolean;
   onClose: () => void;
   customerName: string;
   customerPhone: string;
   currentPoints: number;
   currentStamps: number;
+  cashier: any;
 }
 
-export function AssignPointsModal({
+export function EnhancedAssignPointsModal({
   open,
   onClose,
   customerName,
   customerPhone,
   currentPoints,
   currentStamps,
-}: AssignPointsModalProps) {
+  cashier,
+}: EnhancedAssignPointsModalProps) {
   const { toast } = useToast();
-  const { user } = useAuth();
   const [assignType, setAssignType] = useState<'points' | 'stamps'>('points');
   const [amount, setAmount] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [note, setNote] = useState('');
   
   const handleSubmit = () => {
     setIsSubmitting(true);
     
+    // Create a transaction record
     const transaction = {
+      id: Date.now().toString(),
+      customerId: customerPhone,
       customerName,
-      customerPhone,
+      cashierId: cashier.id,
+      cashierName: cashier.name,
       type: assignType,
       amount,
+      note,
       timestamp: new Date().toISOString(),
-      assignedBy: user ? {
-        id: user.id,
-        name: user.name,
-        role: user.role
-      } : {
-        id: 'system',
-        name: 'System',
-        role: 'system'
-      }
     };
     
     // Simulate API call
     setTimeout(() => {
       setIsSubmitting(false);
-      console.log('Reward transaction:', transaction);
+      console.log('Transaction recorded:', transaction);
       
       toast({
         title: "Success!",
-        description: `${amount} ${assignType} assigned to ${customerName}.`,
+        description: `${amount} ${assignType} assigned to ${customerName} by ${cashier.name}.`,
       });
       onClose();
     }, 1000);
@@ -126,13 +124,24 @@ export function AssignPointsModal({
             />
           </div>
           
-          {user && (
-            <div className="bg-secondary/30 p-3 rounded-md">
-              <p className="text-sm text-gray-600">
-                <span className="font-medium">Assigned by:</span> {user.name} ({user.role})
-              </p>
-            </div>
-          )}
+          <div className="space-y-2">
+            <Label htmlFor="note">Note (Optional)</Label>
+            <Input
+              id="note"
+              placeholder="e.g., Purchase of Coffee + Pastry"
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+            />
+          </div>
+          
+          <div className="bg-secondary/30 p-3 rounded-md">
+            <p className="text-sm text-gray-600">
+              <span className="font-medium">Cashier:</span> {cashier?.name}
+            </p>
+            <p className="text-xs text-gray-500 mt-1">
+              This transaction will be recorded with your cashier ID.
+            </p>
+          </div>
         </div>
         
         <DialogFooter className="flex space-x-2 justify-end">

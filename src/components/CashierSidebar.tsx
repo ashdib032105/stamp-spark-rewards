@@ -6,15 +6,14 @@ import {
   LayoutDashboard,
   Users,
   Award,
-  QrCode,
-  MessageSquare,
-  Settings,
+  Search,
   ChevronRight,
   ChevronLeft,
-  User,
+  LogOut,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
+import { useAuth } from '@/context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 interface SidebarProps {
   collapsed: boolean;
@@ -24,43 +23,35 @@ interface SidebarProps {
 const navItems = [
   {
     title: 'Dashboard',
-    href: '/business/dashboard',
+    href: '/cashier/dashboard',
     icon: LayoutDashboard,
   },
   {
-    title: 'Customers',
-    href: '/business/customers',
+    title: 'Find Customer',
+    href: '/cashier/find-customer',
+    icon: Search,
+  },
+  {
+    title: 'Recent Customers',
+    href: '/cashier/recent-customers',
     icon: Users,
   },
   {
-    title: 'Cashiers',
-    href: '/business/cashiers',
-    icon: User,
-  },
-  {
-    title: 'Rewards',
-    href: '/business/rewards',
+    title: 'Rewards Catalog',
+    href: '/cashier/rewards',
     icon: Award,
-  },
-  {
-    title: 'QR Code',
-    href: '/business/qr-code',
-    icon: QrCode,
-  },
-  {
-    title: 'Campaigns',
-    href: '/business/campaigns',
-    icon: MessageSquare,
-  },
-  {
-    title: 'Settings',
-    href: '/business/settings',
-    icon: Settings,
   },
 ];
 
-export function BusinessSidebar({ collapsed, setCollapsed }: SidebarProps) {
+export function CashierSidebar({ collapsed, setCollapsed }: SidebarProps) {
   const location = useLocation();
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
 
   return (
     <div
@@ -101,12 +92,30 @@ export function BusinessSidebar({ collapsed, setCollapsed }: SidebarProps) {
         </nav>
       </div>
 
-      {!collapsed && (
+      {!collapsed ? (
         <div className="p-4 border-t">
-          <div className="text-sm text-muted-foreground">
-            <p>Business Account</p>
-            <p className="font-medium text-foreground">My Coffee Shop</p>
+          <div className="text-sm text-muted-foreground mb-2">
+            <p>Logged in as</p>
+            <p className="font-medium text-foreground">{user?.name}</p>
           </div>
+          <Button 
+            variant="outline" 
+            className="w-full justify-start text-red-500 hover:text-red-600 hover:bg-red-50"
+            onClick={handleLogout}
+          >
+            <LogOut className="h-4 w-4 mr-2" /> Sign Out
+          </Button>
+        </div>
+      ) : (
+        <div className="p-2 border-t">
+          <Button 
+            variant="outline" 
+            size="icon" 
+            onClick={handleLogout}
+            className="w-full h-10 text-red-500 hover:text-red-600 hover:bg-red-50"
+          >
+            <LogOut className="h-4 w-4" />
+          </Button>
         </div>
       )}
     </div>

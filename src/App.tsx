@@ -21,6 +21,10 @@ import Dashboard from "./pages/business/Dashboard";
 import CustomersPage from "./pages/business/CustomersPage";
 import QrCodePage from "./pages/business/QrCodePage";
 import RewardsPage from "./pages/business/RewardsPage";
+import CashiersPage from "./pages/business/CashiersPage";
+
+// Cashier Pages
+import CashierDashboard from "./pages/cashier/CashierDashboard";
 
 const queryClient = new QueryClient();
 
@@ -46,6 +50,10 @@ const App = () => (
             <Route path="/business/customers" element={<CustomersPage />} />
             <Route path="/business/rewards" element={<RewardsPage />} />
             <Route path="/business/qr-code" element={<QrCodePage />} />
+            <Route path="/business/cashiers" element={<CashiersPage />} />
+            
+            {/* Cashier Routes */}
+            <Route path="/cashier/dashboard" element={<CashierDashboard />} />
             
             {/* Catch-all */}
             <Route path="*" element={<NotFound />} />

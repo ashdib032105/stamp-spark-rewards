@@ -1,7 +1,7 @@
 
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
-type UserRole = 'customer' | 'business';
+type UserRole = 'customer' | 'business' | 'cashier';
 
 interface User {
   id: string;
@@ -9,6 +9,7 @@ interface User {
   role: UserRole;
   phone?: string;
   email?: string;
+  businessId?: string; // To identify which business a cashier belongs to
 }
 
 interface AuthContextType {

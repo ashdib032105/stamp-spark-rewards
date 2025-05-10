@@ -22,12 +22,17 @@ const phoneFormSchema = z.object({
   phone: z.string().min(10, { message: "Phone number must be at least 10 digits" }),
 });
 
+const cashierFormSchema = z.object({
+  email: z.string().email({ message: "Please enter a valid email address" }),
+  password: z.string().min(1, { message: "Password is required" }),
+});
+
 const Login = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [activeTab, setActiveTab] = useState<'business' | 'customer'>('business');
+  const [activeTab, setActiveTab] = useState<'business' | 'customer' | 'cashier'>('business');
   
   const businessForm = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -41,6 +46,14 @@ const Login = () => {
     resolver: zodResolver(phoneFormSchema),
     defaultValues: {
       phone: "",
+    },
+  });
+  
+  const cashierForm = useForm<z.infer<typeof cashierFormSchema>>({
+    resolver: zodResolver(cashierFormSchema),
+    defaultValues: {
+      email: "",
+      password: "",
     },
   });
   
@@ -93,6 +106,32 @@ const Login = () => {
       navigate('/customer/loyalty-card');
     }, 1000);
   };
+  
+  const onCashierSubmit = (values: z.infer<typeof cashierFormSchema>) => {
+    setIsSubmitting(true);
+    
+    // Simulate API call
+    setTimeout(() => {
+      setIsSubmitting(false);
+      
+      // Login the user as cashier
+      login({
+        id: 'cash123',
+        name: 'Alex Johnson',
+        role: 'cashier',
+        email: values.email,
+        businessId: 'b123' // Associate with business
+      });
+      
+      toast({
+        title: "Login Successful",
+        description: "Welcome back to your cashier dashboard.",
+      });
+      
+      // Redirect to cashier dashboard
+      navigate('/cashier/dashboard');
+    }, 1000);
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-white to-secondary/30">
@@ -109,11 +148,12 @@ const Login = () => {
           <CardContent>
             <Tabs 
               value={activeTab} 
-              onValueChange={(value) => setActiveTab(value as 'business' | 'customer')}
+              onValueChange={(value) => setActiveTab(value as 'business' | 'customer' | 'cashier')}
               className="space-y-4"
             >
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="business">Business Owner</TabsTrigger>
+              <TabsList className="grid w-full grid-cols-3">
+                <TabsTrigger value="business">Business</TabsTrigger>
+                <TabsTrigger value="cashier">Cashier</TabsTrigger>
                 <TabsTrigger value="customer">Customer</TabsTrigger>
               </TabsList>
               
@@ -191,13 +231,55 @@ const Login = () => {
                   <p>Scan a business QR code to join their loyalty program</p>
                 </div>
               </TabsContent>
+              
+              <TabsContent value="cashier">
+                <Form {...cashierForm}>
+                  <form onSubmit={cashierForm.handleSubmit(onCashierSubmit)} className="space-y-4">
+                    <FormField
+                      control={cashierForm.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Email</FormLabel>
+                          <FormControl>
+                            <Input type="email" placeholder="cashier@example.com" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={cashierForm.control}
+                      name="password"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Password</FormLabel>
+                          <FormControl>
+                            <Input type="password" placeholder="••••••••" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <Button 
+                      type="submit" 
+                      className="w-full bg-gradient-purple hover:opacity-90"
+                      disabled={isSubmitting}
+                    >
+                      {isSubmitting ? "Logging In..." : "Login as Cashier"}
+                    </Button>
+                  </form>
+                </Form>
+              </TabsContent>
             </Tabs>
           </CardContent>
           <CardFooter className="flex justify-center">
             <p className="text-sm text-gray-500">
               New to StampSpark?{" "}
               <a href={activeTab === 'business' ? "/register" : "/join"} className="text-primary font-medium hover:underline">
-                {activeTab === 'business' ? "Create Business Account" : "Join a Program"}
+                {activeTab === 'business' ? "Create Business Account" : activeTab === 'customer' ? "Join a Program" : "Contact Business Owner"}
               </a>
             </p>
           </CardFooter>
