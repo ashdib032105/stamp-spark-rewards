@@ -67,7 +67,7 @@ export function Navbar() {
         <div className="flex justify-between h-16">
           <div className="flex items-center">
             <Link to="/" className="flex-shrink-0 flex items-center">
-              <span className="text-2xl font-bold text-brand-purple">StampSpark</span>
+              <span className="text-2xl font-bold text-brand-purple">RewardCard</span>
             </Link>
           </div>
 

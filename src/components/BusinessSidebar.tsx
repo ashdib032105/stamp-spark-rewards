@@ -83,7 +83,7 @@ export function BusinessSidebar({ collapsed, setCollapsed }: SidebarProps) {
       )}
     >
       <div className="flex items-center justify-between h-16 px-4 border-b">
-        {!collapsed && <span className="text-xl font-bold text-brand-purple">StampSpark</span>}
+        {!collapsed && <span className="text-xl font-bold text-brand-purple">RewardCard</span>}
         <Button
           variant="ghost"
           size="icon"
