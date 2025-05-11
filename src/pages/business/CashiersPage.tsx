@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Search, UserPlus, Trash2, Mail, Info } from 'lucide-react';
+import { Search, UserPlus, Trash2, Mail, Info, Copy, Link } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
@@ -19,7 +19,8 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/components/ui/accordion"
+} from "@/components/ui/accordion";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters" }),
@@ -34,6 +35,11 @@ const CashiersPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [showAddCashierDialog, setShowAddCashierDialog] = useState(false);
   const [showInfoDialog, setShowInfoDialog] = useState(false);
+  const [showInviteDialog, setShowInviteDialog] = useState(false);
+  const [activeTab, setActiveTab] = useState("direct");
+
+  // Mock invite link
+  const inviteLink = `https://stampspark.com/join/cashier/${Math.random().toString(36).substring(2, 10)}`;
 
   // Mock cashier data
   const [cashiers, setCashiers] = useState([
@@ -97,6 +103,23 @@ const CashiersPage = () => {
     });
   };
   
+  const copyInviteLink = () => {
+    navigator.clipboard.writeText(inviteLink);
+    toast({
+      title: "Link copied",
+      description: "Invite link copied to clipboard",
+    });
+  };
+
+  const sendInviteEmail = (email: string) => {
+    // In a real app, this would send an API request
+    toast({
+      title: "Invite sent",
+      description: `Invite email sent to ${email}`,
+    });
+    setShowInviteDialog(false);
+  };
+  
   // Filter cashiers based on search query
   const filteredCashiers = cashiers.filter(cashier => 
     cashier.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
@@ -132,9 +155,14 @@ const CashiersPage = () => {
                 </p>
               </div>
               
-              <Button onClick={() => setShowAddCashierDialog(true)} className="gap-1">
-                <UserPlus className="h-4 w-4" /> Add Cashier
-              </Button>
+              <div className="flex gap-2">
+                <Button variant="outline" onClick={() => setShowInviteDialog(true)} className="gap-1">
+                  <Link className="h-4 w-4" /> Invite Cashier
+                </Button>
+                <Button onClick={() => setShowAddCashierDialog(true)} className="gap-1">
+                  <UserPlus className="h-4 w-4" /> Add Cashier
+                </Button>
+              </div>
             </div>
 
             <Card className="mb-6">
@@ -421,6 +449,7 @@ const CashiersPage = () => {
                     <li>Search for customers</li>
                     <li>Assign points/stamps</li>
                     <li>View their own transaction history</li>
+                    <li>Access the dashboard</li>
                   </ul>
                 </div>
                 <div className="bg-secondary/20 p-3 rounded-lg">
@@ -439,6 +468,77 @@ const CashiersPage = () => {
           <DialogFooter>
             <Button onClick={() => setShowInfoDialog(false)}>Close</Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Invite Cashier Dialog */}
+      <Dialog open={showInviteDialog} onOpenChange={setShowInviteDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Invite Cashier</DialogTitle>
+            <DialogDescription>
+              Send an invite link to your cashier to join your business.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="direct">Direct Link</TabsTrigger>
+              <TabsTrigger value="email">Email Invite</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="direct" className="space-y-4 mt-4">
+              <div className="space-y-2">
+                <Label>Invite Link</Label>
+                <div className="flex items-center">
+                  <Input 
+                    readOnly 
+                    value={inviteLink}
+                    className="pr-12"
+                  />
+                  <Button 
+                    size="sm" 
+                    variant="ghost" 
+                    className="ml-[-40px]"
+                    onClick={copyInviteLink}
+                  >
+                    <Copy className="h-4 w-4" />
+                  </Button>
+                </div>
+                <p className="text-xs text-gray-500">
+                  This link will allow anyone to join as a cashier for your business. Share it securely.
+                </p>
+              </div>
+              
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setShowInviteDialog(false)}>
+                  Close
+                </Button>
+                <Button onClick={copyInviteLink} className="gap-1">
+                  <Copy className="h-4 w-4" /> Copy Link
+                </Button>
+              </DialogFooter>
+            </TabsContent>
+            
+            <TabsContent value="email" className="space-y-4 mt-4">
+              <div className="space-y-2">
+                <Label htmlFor="cashier-email">Cashier's Email</Label>
+                <Input id="cashier-email" type="email" placeholder="cashier@example.com" />
+                <p className="text-xs text-gray-500">
+                  We'll send an email with instructions on how to join as a cashier.
+                </p>
+              </div>
+              
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setShowInviteDialog(false)}>
+                  Cancel
+                </Button>
+                <Button onClick={() => sendInviteEmail("cashier@example.com")}>
+                  Send Invite
+                </Button>
+              </DialogFooter>
+            </TabsContent>
+          </Tabs>
         </DialogContent>
       </Dialog>
     </div>

@@ -66,7 +66,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       case 'cashier':
         return {
           customers: true, // Cashiers need access to find/manage customers
-          rewards: true,   // Cashiers need access to assign rewards
+          rewards: false,  // Cashiers should not have access to reward settings
           settings: false,
           qrCode: false,
           cashiers: false,
