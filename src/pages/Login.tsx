@@ -114,7 +114,7 @@ const Login = () => {
     setTimeout(() => {
       setIsSubmitting(false);
       
-      // Login the user as cashier
+      // Login the user as cashier with business access
       login({
         id: 'cash123',
         name: 'Alex Johnson',
@@ -125,11 +125,11 @@ const Login = () => {
       
       toast({
         title: "Login Successful",
-        description: "Welcome back to your cashier dashboard.",
+        description: "Welcome to the business dashboard.",
       });
       
-      // Redirect to cashier dashboard
-      navigate('/cashier/dashboard');
+      // Redirect to business dashboard instead of cashier dashboard
+      navigate('/business/dashboard');
     }, 1000);
   };
 

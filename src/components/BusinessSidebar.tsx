@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
@@ -10,50 +11,69 @@ import {
   ChevronRight,
   ChevronLeft,
   User,
+  LogOut,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
+import { useAuth } from '@/context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 interface SidebarProps {
   collapsed: boolean;
   setCollapsed: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const navItems = [
-  {
-    title: 'Dashboard',
-    href: '/business/dashboard',
-    icon: LayoutDashboard,
-  },
-  {
-    title: 'Customers',
-    href: '/business/customers',
-    icon: Users,
-  },
-  {
-    title: 'Cashiers',
-    href: '/business/cashiers',
-    icon: User,
-  },
-  {
-    title: 'Rewards',
-    href: '/business/rewards',
-    icon: Award,
-  },
-  {
-    title: 'QR Code',
-    href: '/business/qr-code',
-    icon: QrCode,
-  },
-  {
-    title: 'Settings',
-    href: '/business/settings',
-    icon: Settings,
-  },
-];
-
 export function BusinessSidebar({ collapsed, setCollapsed }: SidebarProps) {
   const location = useLocation();
+  const { permissions, logout, user } = useAuth();
+  const navigate = useNavigate();
+
+  const navItems = [
+    {
+      title: 'Dashboard',
+      href: '/business/dashboard',
+      icon: LayoutDashboard,
+      permitted: permissions.dashboard,
+    },
+    {
+      title: 'Customers',
+      href: '/business/customers',
+      icon: Users,
+      permitted: permissions.customers,
+    },
+    {
+      title: 'Cashiers',
+      href: '/business/cashiers',
+      icon: User,
+      permitted: permissions.cashiers,
+    },
+    {
+      title: 'Rewards',
+      href: '/business/rewards',
+      icon: Award,
+      permitted: permissions.rewards,
+    },
+    {
+      title: 'QR Code',
+      href: '/business/qr-code',
+      icon: QrCode,
+      permitted: permissions.qrCode,
+    },
+    {
+      title: 'Settings',
+      href: '/business/settings',
+      icon: Settings,
+      permitted: permissions.settings,
+    },
+  ];
+
+  // Filter items based on permissions
+  const permittedItems = navItems.filter(item => item.permitted);
+  
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
 
   return (
     <div
@@ -76,7 +96,7 @@ export function BusinessSidebar({ collapsed, setCollapsed }: SidebarProps) {
 
       <div className="flex-1 overflow-y-auto py-4">
         <nav className="space-y-1 px-2">
-          {navItems.map((item) => (
+          {permittedItems.map((item) => (
             <Link
               key={item.href}
               to={item.href}
@@ -94,12 +114,31 @@ export function BusinessSidebar({ collapsed, setCollapsed }: SidebarProps) {
         </nav>
       </div>
 
-      {!collapsed && (
+      {!collapsed ? (
         <div className="p-4 border-t">
-          <div className="text-sm text-muted-foreground">
-            <p>Business Account</p>
-            <p className="font-medium text-foreground">My Coffee Shop</p>
+          <div className="text-sm text-muted-foreground mb-2">
+            <p>Logged in as</p>
+            <p className="font-medium text-foreground">{user?.name}</p>
+            <p className="text-xs text-muted-foreground mt-1">Role: {user?.role}</p>
           </div>
+          <Button 
+            variant="outline" 
+            className="w-full justify-start text-red-500 hover:text-red-600 hover:bg-red-50"
+            onClick={handleLogout}
+          >
+            <LogOut className="h-4 w-4 mr-2" /> Sign Out
+          </Button>
+        </div>
+      ) : (
+        <div className="p-2 border-t">
+          <Button 
+            variant="outline" 
+            size="icon" 
+            onClick={handleLogout}
+            className="w-full h-10 text-red-500 hover:text-red-600 hover:bg-red-50"
+          >
+            <LogOut className="h-4 w-4" />
+          </Button>
         </div>
       )}
     </div>

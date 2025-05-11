@@ -28,14 +28,38 @@ export function Navbar() {
     navigate('/');
   };
 
-  const handleSwitchRole = (newRole: 'customer' | 'business') => {
+  const handleSwitchRole = (newRole: 'customer' | 'business' | 'cashier') => {
     switchRole(newRole);
     toast({
       title: `Switched to ${newRole} view`,
       description: `You're now using the app as a ${newRole}.`,
     });
-    navigate(newRole === 'business' ? '/business/dashboard' : '/customer/loyalty-card');
+    
+    // Redirect based on role
+    if (newRole === 'business' || newRole === 'cashier') {
+      navigate('/business/dashboard');
+    } else {
+      navigate('/customer/loyalty-card');
+    }
   };
+
+  // Determine available role options based on current user role
+  const getRoleOptions = () => {
+    if (!user) return [];
+    
+    switch (user.role) {
+      case 'business':
+        return ['business', 'customer'];
+      case 'customer':
+        return ['customer'];
+      case 'cashier':
+        return ['cashier', 'customer'];
+      default:
+        return [];
+    }
+  };
+
+  const roleOptions = getRoleOptions();
 
   return (
     <nav className="bg-white shadow-sm border-b">
@@ -49,46 +73,57 @@ export function Navbar() {
 
           {/* Desktop navigation */}
           <div className="hidden md:ml-6 md:flex md:items-center md:space-x-4">
-            {isAuthenticated ? (
-              <>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="flex items-center gap-2">
-                      Role: {role === 'business' ? 'Business' : 'Customer'}
-                      <ChevronDown size={16} />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
+            {isAuthenticated && roleOptions.length > 1 && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="flex items-center gap-2">
+                    Role: {role === 'business' ? 'Business' : role === 'cashier' ? 'Cashier' : 'Customer'}
+                    <ChevronDown size={16} />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  {roleOptions.includes('customer') && (
                     <DropdownMenuItem onClick={() => handleSwitchRole('customer')}>
                       Customer View
                     </DropdownMenuItem>
+                  )}
+                  {roleOptions.includes('business') && (
                     <DropdownMenuItem onClick={() => handleSwitchRole('business')}>
                       Business View
                     </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                  )}
+                  {roleOptions.includes('cashier') && (
+                    <DropdownMenuItem onClick={() => handleSwitchRole('cashier')}>
+                      Cashier View
+                    </DropdownMenuItem>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
 
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="flex items-center gap-2">
-                      <Avatar className="h-8 w-8">
-                        <AvatarFallback>{user?.name?.charAt(0) || 'U'}</AvatarFallback>
-                      </Avatar>
-                      <span className="hidden lg:inline">{user?.name}</span>
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem asChild>
-                      <Link to="/profile">Profile</Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={handleLogout}>
-                      <LogOut className="mr-2 h-4 w-4" />
-                      Logout
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </>
-            ) : (
+            {isAuthenticated && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="flex items-center gap-2">
+                    <Avatar className="h-8 w-8">
+                      <AvatarFallback>{user?.name?.charAt(0) || 'U'}</AvatarFallback>
+                    </Avatar>
+                    <span className="hidden lg:inline">{user?.name}</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem asChild>
+                    <Link to="/profile">Profile</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleLogout}>
+                    <LogOut className="mr-2 h-4 w-4" />
+                    Logout
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
+
+            {!isAuthenticated && (
               <>
                 <Button asChild variant="ghost">
                   <Link to="/login">Login</Link>
@@ -124,16 +159,42 @@ export function Navbar() {
                 </Avatar>
                 <div>
                   <p className="text-sm font-medium">{user?.name}</p>
-                  <p className="text-xs text-gray-500">Role: {role === 'business' ? 'Business' : 'Customer'}</p>
+                  <p className="text-xs text-gray-500">Role: {role === 'business' ? 'Business' : role === 'cashier' ? 'Cashier' : 'Customer'}</p>
                 </div>
               </div>
-              <Button 
-                variant="ghost" 
-                className="w-full justify-start" 
-                onClick={() => handleSwitchRole(role === 'business' ? 'customer' : 'business')}
-              >
-                Switch to {role === 'business' ? 'Customer' : 'Business'} View
-              </Button>
+              
+              {roleOptions.length > 1 && (
+                <div className="space-y-1">
+                  {roleOptions.includes('customer') && (
+                    <Button 
+                      variant="ghost" 
+                      className="w-full justify-start" 
+                      onClick={() => handleSwitchRole('customer')}
+                    >
+                      Switch to Customer View
+                    </Button>
+                  )}
+                  {roleOptions.includes('business') && (
+                    <Button 
+                      variant="ghost" 
+                      className="w-full justify-start" 
+                      onClick={() => handleSwitchRole('business')}
+                    >
+                      Switch to Business View
+                    </Button>
+                  )}
+                  {roleOptions.includes('cashier') && (
+                    <Button 
+                      variant="ghost" 
+                      className="w-full justify-start" 
+                      onClick={() => handleSwitchRole('cashier')}
+                    >
+                      Switch to Cashier View
+                    </Button>
+                  )}
+                </div>
+              )}
+              
               <Link to="/profile" className="block px-3 py-2 text-base font-medium rounded-md hover:bg-gray-50">
                 Profile
               </Link>

@@ -12,14 +12,33 @@ interface User {
   businessId?: string; // To identify which business a cashier belongs to
 }
 
+interface Permission {
+  customers: boolean;
+  rewards: boolean;
+  settings: boolean;
+  qrCode: boolean;
+  cashiers: boolean;
+  dashboard: boolean;
+}
+
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   role: UserRole | null;
+  permissions: Permission;
   login: (userData: User) => void;
   logout: () => void;
   switchRole: (role: UserRole) => void;
 }
+
+const defaultPermissions: Permission = {
+  customers: false,
+  rewards: false,
+  settings: false,
+  qrCode: false,
+  cashiers: false,
+  dashboard: false
+};
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -29,6 +48,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // Check if user is authenticated
   const isAuthenticated = user !== null;
+
+  // Calculate permissions based on role
+  const getPermissions = (userRole: UserRole | null): Permission => {
+    if (!userRole) return defaultPermissions;
+    
+    switch (userRole) {
+      case 'business':
+        return {
+          customers: true,
+          rewards: true,
+          settings: true,
+          qrCode: true,
+          cashiers: true,
+          dashboard: true
+        };
+      case 'cashier':
+        return {
+          customers: true, // Cashiers need access to find/manage customers
+          rewards: true,   // Cashiers need access to assign rewards
+          settings: false,
+          qrCode: false,
+          cashiers: false,
+          dashboard: true  // Limited dashboard view
+        };
+      default:
+        return defaultPermissions;
+    }
+  };
+
+  const permissions = getPermissions(role);
 
   // Login function
   const login = (userData: User) => {
@@ -64,6 +113,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         user,
         isAuthenticated,
         role,
+        permissions,
         login,
         logout,
         switchRole
